@@ -3,7 +3,7 @@ name: CI/CD for Payment Microservice
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   test:
