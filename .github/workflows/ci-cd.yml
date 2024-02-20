@@ -31,7 +31,7 @@ jobs:
 
       - name: Run component test
         run: python tests/component.py
-
+        
 
       - name: Clean up (compose down)
         run: docker compose down
