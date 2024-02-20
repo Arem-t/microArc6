@@ -24,7 +24,4 @@ jobs:
           echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
           docker buildx create --use
           docker buildx inspect
-          docker buildx build --platform linux/amd64,linux/arm64 -t $DOCKERHUB_USERNAME/delivery-service:latest -t $DOCKERHUB_USERNAME/delivery-service:${{ github.sha }} -f delivery_service/Dockerfile .
-
-          docker push $DOCKERHUB_USERNAME/delivery-service:latest
-          docker push $DOCKERHUB_USERNAME/delivery-service:${{ github.sha }}
+          docker buildx build --platform linux/amd64,linux/arm64 -t DOCKERHUB_USERNAME/delivery-service:latest -t DOCKERHUB_USERNAME/delivery-service:${{ github.sha }} --push -f delivery_service/Dockerfile .
