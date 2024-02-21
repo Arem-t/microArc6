@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: delivery_service/Dockerfile
     ports:
-      - "8000:80"
+      - "8080:80"
     depends_on:
       - payment
     environment:
@@ -17,6 +17,6 @@ services:
       context: .
       dockerfile: payment_service/Dockerfile
     ports:
-      - "8001:80"
+      - "8081:80"
     environment:
       - DATABASE_URL=sqlite:///./payment.db

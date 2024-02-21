@@ -2,11 +2,15 @@ from fastapi import FastAPI, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+import uvicorn
+import os
 
 app = FastAPI()
 
 # Подключение к базе данных
-DATABASE_URL = "sqlite:///./test.db"  
+current_directory = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(current_directory, "test.db")
+DATABASE_URL = f"sqlite:///{db_path}"  
 engine = create_engine(DATABASE_URL)
 
 # Создание базового класса для моделей SQLAlchemy
@@ -62,3 +66,6 @@ def read_delivery(order_id: int):
         raise HTTPException(status_code=404, detail="Delivery not found")
 
     return {"order_id": delivery.order_id, "status": delivery.status}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=80)

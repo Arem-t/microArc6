@@ -1,7 +1,7 @@
 import unittest
 import requests
 
-delivery_url = 'http://127.0.0.1:8080'
+delivery_url = 'http://localhost:8080'
 add_delivery_url = f'{delivery_url}/delivery'
 get_delivery_url = f'{delivery_url}/delivery'
 
