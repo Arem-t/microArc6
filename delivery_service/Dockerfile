@@ -10,6 +10,6 @@ COPY ./delivery_service /code
 
 COPY ./delivery_service/test.db /code/test.db
 
-EXPOSE 8000
+EXPOSE 80
 
-CMD ["uvicorn", "delivery_service:app", "--host", "127.0.0.1", "--port", "80" ]
+CMD ["uvicorn", "delivery_service:app", "--host", "127.0.0.1", "--port", "8080" ]
