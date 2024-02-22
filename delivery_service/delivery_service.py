@@ -1,11 +1,56 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, status, Form
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import uvicorn
 import os
+from keycloak import KeycloakOpenID
+
+
 
 app = FastAPI()
+
+# Данные для подключения к Keycloak
+KEYCLOAK_URL = "http://0.0.0.0:8180/"
+KEYCLOAK_CLIENT_ID = "client"
+KEYCLOAK_REALM = "delivery_service_realm"
+KEYCLOAK_CLIENT_SECRET = "Nck5HHam9hAQTU1mEx9s8CEbrFzaDP3j"
+
+keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_URL,
+                                  client_id=KEYCLOAK_CLIENT_ID,
+                                  realm_name=KEYCLOAK_REALM,
+                                  client_secret_key=KEYCLOAK_CLIENT_SECRET)
+
+user_token = ""
+
+@app.post("/get-token")
+async def get_token(username: str = Form(...), password: str = Form(...)):
+    try:
+        # Получение токена
+        token = keycloak_openid.token(grant_type=["password"],
+                                      username=username,
+                                      password=password)
+        global user_token
+        user_token = token
+        return token
+    except Exception as e:
+        print(e)  # Логирование для диагностики
+        raise HTTPException(status_code=400, detail="Не удалось получить токен")
+    
+def check_user_roles():
+    global user_token
+    token = user_token
+    try:
+        userinfo = keycloak_openid.userinfo(token["access_token"])
+        token_info = keycloak_openid.introspect(token["access_token"])
+        if "testRole" not in token_info["realm_access"]["roles"]:
+            raise HTTPException(status_code=403, detail="Access denied")
+        return token_info
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid token or access denied")
+    
+
+
 
 # Подключение к базе данных
 current_directory = os.path.abspath(os.path.dirname(__file__))
@@ -50,22 +95,28 @@ def create_delivery_and_record(db, order_id: int):
 # POST-запрос для создания доставки
 @app.post("/delivery/{order_id}")
 def create_delivery(order_id: int):
-    db = SessionLocal()
-    result = create_delivery_and_record(db, order_id)
-    db.close()
-    return result
+    if(check_user_roles()):
+        db = SessionLocal()
+        result = create_delivery_and_record(db, order_id)
+        db.close()
+        return result
+    else:
+        return "Wrong JWT Token"
 
 # GET-запрос для чтения данных о доставке из БД
 @app.get("/delivery/{order_id}")
 def read_delivery(order_id: int):
-    db = SessionLocal()
-    delivery = db.query(Delivery).filter(Delivery.order_id == order_id).first()
-    db.close()
+    if(check_user_roles()):
+        db = SessionLocal()
+        delivery = db.query(Delivery).filter(Delivery.order_id == order_id).first()
+        db.close()
 
-    if not delivery:
-        raise HTTPException(status_code=404, detail="Delivery not found")
+        if not delivery:
+            raise HTTPException(status_code=404, detail="Delivery not found")
 
-    return {"order_id": delivery.order_id, "status": delivery.status}
+        return {"order_id": delivery.order_id, "status": delivery.status}
+    else:
+        return "Wrong JWT Token"
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=80)
