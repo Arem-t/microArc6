@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import uvicorn
 import os
-from keycloak import KeycloakOpenID
+from keycloak.keycloak_openid import KeycloakOpenID
 
 
 
@@ -12,9 +12,9 @@ app = FastAPI()
 
 # Данные для подключения к Keycloak
 KEYCLOAK_URL = "http://0.0.0.0:8180/"
-KEYCLOAK_CLIENT_ID = "client"
+KEYCLOAK_CLIENT_ID = "mikhin"
 KEYCLOAK_REALM = "delivery_service_realm"
-KEYCLOAK_CLIENT_SECRET = "Nck5HHam9hAQTU1mEx9s8CEbrFzaDP3j"
+KEYCLOAK_CLIENT_SECRET = "AliwqwCWP6RvWgENTnWaFvopI3G5s7lm"
 
 keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_URL,
                                   client_id=KEYCLOAK_CLIENT_ID,
@@ -41,7 +41,8 @@ def check_user_roles():
     global user_token
     token = user_token
     try:
-        userinfo = keycloak_openid.userinfo(token["access_token"])
+        #userinfo = keycloak_openid.userinfo(token["access_token"])
+        token = keycloak_openid.token("testuser", "1")
         token_info = keycloak_openid.introspect(token["access_token"])
         if "testRole" not in token_info["realm_access"]["roles"]:
             raise HTTPException(status_code=403, detail="Access denied")
