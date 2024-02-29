@@ -14,7 +14,8 @@ app = FastAPI()
 KEYCLOAK_URL = "http://0.0.0.0:8180/"
 KEYCLOAK_CLIENT_ID = "mikhin"
 KEYCLOAK_REALM = "delivery_service_realm"
-KEYCLOAK_CLIENT_SECRET = "AliwqwCWP6RvWgENTnWaFvopI3G5s7lm"
+KEYCLOAK_CLIENT_SECRET = "WZD8DnZbd0i8IXub7UGu7Qn7nTrco2Zj"
+KEYCLOAK_CLIENT_SECRET2 = "AliwqwCWP6RvWgENTnWaFvopI3G5s7lm"
 
 keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_URL,
                                   client_id=KEYCLOAK_CLIENT_ID,
@@ -22,6 +23,10 @@ keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_URL,
                                   client_secret_key=KEYCLOAK_CLIENT_SECRET)
 
 user_token = ""
+
+
+from prometheus_fastapi_instrumentator import Instrumentator
+Instrumentator().instrument(app).expose(app)
 
 @app.post("/get-token")
 async def get_token(username: str = Form(...), password: str = Form(...)):
