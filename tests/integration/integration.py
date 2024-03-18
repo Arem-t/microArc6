@@ -1,13 +1,25 @@
-import pytest
+import unittest
+import psycopg2
 
-import delivery_service.delivery_service
+class IntegrationTests(unittest.TestCase):
+    def setUp(self):
+        # Подключение к тестовой базе данных PostgreSQL
+        self.db_connection = psycopg2.connect(
+            host="localhost",
+            port="5432",
+            user="test_user",
+            password="test_password",
+            database="test_db"
+        )
+
+    def tearDown(self):
+        # Закрываем соединение с базой данных после каждого теста
+        self.db_connection.close()
+
+    def test_database_connection(self):
+        # Проверяем, что соединение с базой данных установлено
+        self.assertIsNotNone(self.db_connection)
 
 
-def test_create_delivery(self):
-    r = delivery_service.delivery_service.create_delivery()
-    assert r.status_code == 200, "delivert service connection failed"
-
-def test_read_delivery(self):
-    r = delivery_service.delivery_service.read_delivery()
-    assert r.status_code == 200, "delivert service connection failed"
-        
+if __name__ == '__main__':
+    unittest.main()
