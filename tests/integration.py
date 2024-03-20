@@ -3,7 +3,7 @@ import psycopg2
 
 class IntegrationTests(unittest.TestCase):
     def setUp(self):
-        # Подключение к тестовой базе данных PostgreSQL
+        # Подключение к базе данных PostgreSQL
         self.db_connection = psycopg2.connect(
             host="localhost",
             port="5432",
