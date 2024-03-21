@@ -96,8 +96,8 @@ def get_access_token_from_header(request: Request):
 
 # POST-запрос для создания доставки
 @app.post("/delivery/{order_id}")
-def create_delivery(order_id: int, access_token: str = Depends(get_access_token_from_header)):
-    if(check_user_roles(access_token)):
+def create_delivery(order_id: int, token: str = Header(...)):
+    if(check_user_roles(token)):
         db = SessionLocal()
         result = create_delivery_and_record(db, order_id)
         db.close()
@@ -107,8 +107,8 @@ def create_delivery(order_id: int, access_token: str = Depends(get_access_token_
 
 # GET-запрос для чтения данных о доставке из БД
 @app.get("/delivery/{order_id}")
-def read_delivery(order_id: int, access_token: str = Depends(get_access_token_from_header)):
-    if(check_user_roles(access_token)):
+def read_delivery(order_id: int, token: str = Header(...)):
+    if(check_user_roles(token)):
         db = SessionLocal()
         delivery = db.query(Delivery).filter(Delivery.order_id == order_id).first()
         db.close()
