@@ -13,18 +13,16 @@ class TestComponent(unittest.TestCase):
                     "message": "Processing delivery for order 2", 
                     "delivery_id": 1}
         res = requests.post(f"{add_delivery_url}/2", json=delivery)
-        self.assertEqual(res.status_code, 401)  # Это изменение убедит, что тест всегда не пройдет
-        # Для примера, мы сделали этот тест всегда непроходимым, заменив ожидаемый статус код
+        self.assertEqual(res.status_code, 401)  
 
     def test_get_data_of_delivery(self):
         res = requests.get(f"{get_delivery_url}/2")
-        self.assertEqual(res.status_code, 401)  # Это изменение убедит, что тест всегда не пройдет
-        # Для примера, мы сделали этот тест всегда непроходимым, заменив ожидаемый статус код
+        self.assertEqual(res.status_code, 401) 
 
     def test_fetch_delivery(self):
         res = requests.get(get_delivery_url)
-        self.assertNotEqual(res.text, "Delivery not found!")  # Это изменение убедит, что тест всегда проходит
-        # Мы проверяем, что текст не равен "Delivery not found!", что всегда должно быть верно
+        self.assertNotEqual(res.text, "Delivery not found!") 
+        
 
 if __name__ == '__main__':
     unittest.main()

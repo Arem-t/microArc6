@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, Depends, status, Form
+from fastapi import FastAPI, HTTPException, Depends, status, Form, Request, Header
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -22,9 +23,6 @@ keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_URL,
                                   realm_name=KEYCLOAK_REALM,
                                   client_secret_key=KEYCLOAK_CLIENT_SECRET)
 
-user_token = ""
-
-
 from prometheus_fastapi_instrumentator import Instrumentator
 Instrumentator().instrument(app).expose(app)
 
@@ -35,20 +33,15 @@ async def get_token(username: str = Form(...), password: str = Form(...)):
         token = keycloak_openid.token(grant_type=["password"],
                                       username=username,
                                       password=password)
-        global user_token
-        user_token = token
         return token
     except Exception as e:
         print(e)  # Логирование для диагностики
         raise HTTPException(status_code=400, detail="Не удалось получить токен")
     
-def check_user_roles():
-    global user_token
-    token = user_token
+
+def check_user_roles(token):
     try:
-        #userinfo = keycloak_openid.userinfo(token["access_token"])
-        token = keycloak_openid.token("testuser", "1")
-        token_info = keycloak_openid.introspect(token["access_token"])
+        token_info = keycloak_openid.introspect(token)
         if "testRole" not in token_info["realm_access"]["roles"]:
             raise HTTPException(status_code=403, detail="Access denied")
         return token_info
@@ -98,10 +91,13 @@ def create_delivery_and_record(db, order_id: int):
 
     return {"message": f"Processing delivery for order {order_id}", "delivery_id": db_delivery.id}
 
+def get_access_token_from_header(request: Request):
+    return request.headers["Authorization"]
+
 # POST-запрос для создания доставки
 @app.post("/delivery/{order_id}")
-def create_delivery(order_id: int):
-    if(check_user_roles()):
+def create_delivery(order_id: int, access_token: str = Depends(get_access_token_from_header)):
+    if(check_user_roles(access_token)):
         db = SessionLocal()
         result = create_delivery_and_record(db, order_id)
         db.close()
@@ -111,8 +107,8 @@ def create_delivery(order_id: int):
 
 # GET-запрос для чтения данных о доставке из БД
 @app.get("/delivery/{order_id}")
-def read_delivery(order_id: int):
-    if(check_user_roles()):
+def read_delivery(order_id: int, access_token: str = Depends(get_access_token_from_header)):
+    if(check_user_roles(access_token)):
         db = SessionLocal()
         delivery = db.query(Delivery).filter(Delivery.order_id == order_id).first()
         db.close()
