@@ -80,3 +80,7 @@ vk==3.0
 vk-api==11.9.9
 websocket-client==1.5.1
 yarl==1.9.4
+
+pip~=24.0
+Jinja2~=3.1.4
+pg8000~=1.31.2

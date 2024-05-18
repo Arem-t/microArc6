@@ -1,15 +1,16 @@
 import unittest
 import psycopg2
 
+
 class IntegrationTests(unittest.TestCase):
     def setUp(self):
         # Подключение к базе данных PostgreSQL
         self.db_connection = psycopg2.connect(
+            user="postgres",
+            password="1337",
             host="localhost",
-            port="5432",
-            user="test_user",
-            password="test_password",
-            database="test_db"
+            port=5433,
+            database="postgres"
         )
 
     def tearDown(self):
