@@ -10,6 +10,6 @@ COPY ./bochkarev_payment_service /code
 
 COPY ./bochkarev_payment_service/payment.db /code/payment.db
 
-EXPOSE 80
+EXPOSE 8081
 
 CMD ["python", "bochkarev_payment_service.py"]
