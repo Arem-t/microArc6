@@ -9,7 +9,7 @@ RUN pip install -r /code/requirements.txt
 COPY ./bochkarev_payment_service /code
 
 COPY ./bochkarev_payment_service/payment.db /code/payment.db
-
+#cg
 EXPOSE 8080
 
 CMD ["python", "bochkarev_payment_service.py"]
