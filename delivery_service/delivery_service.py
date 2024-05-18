@@ -13,11 +13,10 @@ from prometheus_fastapi_instrumentator import Instrumentator
 app = FastAPI()
 
 # Данные для подключения к Keycloak
-KEYCLOAK_URL = "http://0.0.0.0:8180/"
-KEYCLOAK_CLIENT_ID = "mikhin"
-KEYCLOAK_REALM = "delivery_service_realm"
-KEYCLOAK_CLIENT_SECRET = "WZD8DnZbd0i8IXub7UGu7Qn7nTrco2Zj"
-KEYCLOAK_CLIENT_SECRET2 = "AliwqwCWP6RvWgENTnWaFvopI3G5s7lm"
+KEYCLOAK_URL = "http://localhost:8180/"
+KEYCLOAK_CLIENT_ID = "test_id"
+KEYCLOAK_REALM = "test"
+KEYCLOAK_CLIENT_SECRET = "6n6V8LMsIaNW05DVhnsVKW9yQusdgd5z"
 
 keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_URL,
                                   client_id=KEYCLOAK_CLIENT_ID,
@@ -42,7 +41,7 @@ async def get_token(username: str = Form(...), password: str = Form(...)):
 def check_user_roles(token):
     try:
         token_info = keycloak_openid.introspect(token)
-        if "testRole" not in token_info["realm_access"]["roles"]:
+        if "test_role" not in token_info["realm_access"]["roles"]:
             raise HTTPException(status_code=403, detail="Access denied")
         return token_info
     except Exception as e:
