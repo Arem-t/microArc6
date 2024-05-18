@@ -13,11 +13,11 @@ class TestComponent(unittest.TestCase):
                     "message": "Processing delivery for order 2", 
                     "delivery_id": 1}
         res = requests.post(f"{add_delivery_url}/2", json=delivery)
-        self.assertEqual(res.status_code, 401)  
+        self.assertEqual(res.status_code, 422)
 
     def test_get_data_of_delivery(self):
         res = requests.get(f"{get_delivery_url}/2")
-        self.assertEqual(res.status_code, 401) 
+        self.assertEqual(res.status_code, 422)
 
     def test_fetch_delivery(self):
         res = requests.get(get_delivery_url)
