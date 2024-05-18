@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import uvicorn
 import os
 from keycloak.keycloak_openid import KeycloakOpenID
+from prometheus_fastapi_instrumentator import Instrumentator
 
 
 
@@ -23,7 +24,6 @@ keycloak_openid = KeycloakOpenID(server_url=KEYCLOAK_URL,
                                   realm_name=KEYCLOAK_REALM,
                                   client_secret_key=KEYCLOAK_CLIENT_SECRET)
 
-from prometheus_fastapi_instrumentator import Instrumentator
 Instrumentator().instrument(app).expose(app)
 
 @app.post("/get-token")
