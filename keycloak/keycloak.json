@@ -2603,7 +2603,7 @@
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "secret" : "6n6V8LMsIaNW05DVhnsVKW9yQusdgd5z",
+    "secret" : "Si4auFepVW08PEbgxUXeJ2cK6hjh6drG",
     "redirectUris" : [ "/*" ],
     "webOrigins" : [ "/*" ],
     "notBefore" : 0,
