@@ -9,7 +9,7 @@ class IntegrationTests(unittest.TestCase):
             user="postgres",
             password="1337",
             host="localhost",
-            port=5433,
+            port=5432,
             database="postgres"
         )
 
